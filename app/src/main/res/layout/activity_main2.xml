@@ -63,18 +63,21 @@
         android:text="Каким ты себя ощущаешь сегодня?"
         android:textColor="@color/edittext"
         android:textSize="20dp"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/privetstvie"></TextView>
 
-    <ListView
+
+    <view class="androidx.appcompat.app.AlertController$RecycleListView"
         android:id="@+id/horizontalList"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="100dp"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vopros"></ListView>
+        app:layout_constraintTop_toBottomOf="@+id/vopros"></view>
 
     <ListView
         android:id="@+id/ListQuotes"

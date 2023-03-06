@@ -1,21 +1,35 @@
 package com.example.yp_trifonova;
 
+import static android.content.ContentValues.TAG;
+
+import static androidx.core.content.ContentProviderCompat.requireContext;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +39,9 @@ public class Main extends AppCompatActivity {
     private AdapterQuotes QouterAdapter;
     private List<QueteMaska> Quotelist = new ArrayList<>();
 
+    private AdapterFeelings FeelingsAdapter;
+    private List<MaskaFeelings> feelingsMaska = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,13 +50,95 @@ public class Main extends AppCompatActivity {
 
 
         ListView Product = findViewById(R.id.ListQuotes);
-
         QouterAdapter = new AdapterQuotes(Main.this, Quotelist);
         Product.setAdapter(QouterAdapter);
         new GetQuotes().execute();
 
 
+        ListView Nastroenie = findViewById(R.id.horizontalList);
+        FeelingsAdapter = new AdapterFeelings(Main.this, feelingsMaska);
+        Nastroenie.setAdapter(FeelingsAdapter);
+
+
+    /*    LinearLayoutManager layoutManager
+                = new LinearLayoutManager(, LinearLayoutManager.HORIZONTAL, false);
+
+        RecyclerView myList = (RecyclerView) findViewById(R.id.horizontalList);
+        myList.setLayoutManager(layoutManager);*/
+
+
+        new GetQuotes().execute();
+        new GetFeelings().execute();
+
     }
+   /* private Bitmap getImageBitmap(String url) {
+        Bitmap bm = null;
+        try {
+            URL aURL = new URL(url);
+            URLConnection conn = aURL.openConnection();
+            conn.connect();
+            InputStream is = conn.getInputStream();
+            BufferedInputStream bis = new BufferedInputStream(is);
+            bm = BitmapFactory.decodeStream(bis);
+            bis.close();
+            is.close();
+        } catch (IOException e) {
+            Log.e(TAG, "Error getting bitmap", e);
+        }
+        return bm;
+    }*/
+    private class GetFeelings extends AsyncTask<Void,Void,String>
+   {
+
+       @Override
+       protected String doInBackground(Void... voids) {
+           try{
+               URL url = new URL("http://mskko2021.mad.hakta.pro/api/feelings");
+               HttpURLConnection connection=(HttpURLConnection) url.openConnection();
+
+               BufferedReader reader=new BufferedReader(new InputStreamReader(connection.getInputStream()));
+               StringBuilder result=new StringBuilder();
+               String line= "";
+               while ((line = reader.readLine()) != null)
+               {
+                   result.append(line);
+               }
+               return result.toString();
+           }
+           catch (Exception exception)
+           {
+               return null;
+           }
+
+       }
+       @Override
+       protected void onPostExecute(String s) {
+           super.onPostExecute(s);
+           try {
+               JSONObject object=new JSONObject(s);
+               JSONArray tempArray= object.getJSONArray("data") ;
+               for (int i = 0;i<tempArray.length();i++)
+               {
+                   JSONObject productJson = tempArray.getJSONObject(i);
+                   MaskaFeelings tempNastorenie = new MaskaFeelings(
+                           productJson.getInt("id"),
+                           productJson.getString("title"),
+                           productJson.getInt("position"),
+                           productJson.getString("image")
+                   );
+                   feelingsMaska.add(tempNastorenie);
+                   FeelingsAdapter.notifyDataSetInvalidated();
+               }
+           }
+           catch (Exception exception)
+           {
+               Toast.makeText(Main.this, "При выводе данных возникла ошибка", Toast.LENGTH_SHORT).show();
+           }
+       }
+   }
+
+
+
 
     private class GetQuotes extends AsyncTask<Void,Void,String>
     {
@@ -81,6 +180,7 @@ public class Main extends AppCompatActivity {
                             productJson.getString("image"),
                             productJson.getString("description")
                     );
+
                     Quotelist.add(tempProduct);
                     QouterAdapter.notifyDataSetInvalidated();
                 }

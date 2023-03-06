@@ -1,13 +1,25 @@
 package com.example.yp_trifonova;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 
 public class AdapterQuotes extends BaseAdapter {
@@ -36,6 +48,7 @@ public class AdapterQuotes extends BaseAdapter {
         return maskList.get(i).getId();
     }
 
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -56,7 +69,8 @@ public class AdapterQuotes extends BaseAdapter {
         }
         else
         {
-            //Image.setImageURI(Uri.parse(maskQuote.getImage()));
+
+              Image.setImageURI(Uri.parse(maskQuote.getImage()));
         }
         description.setText(maskQuote.getDescription());
         return v;
