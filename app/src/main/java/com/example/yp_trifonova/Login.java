@@ -26,7 +26,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Login extends AppCompatActivity {
 
-    User user = new User( "login","password");
+    User user = new User( "","");
     final static String userVariableKey = "USER_VARIABLE";
 
     public static MaskaUser Users;
@@ -37,6 +37,8 @@ public class Login extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         email = findViewById(R.id.Email);
         password = findViewById(R.id.Password);
+        getData();
+
     }
 
 
@@ -84,6 +86,7 @@ public class Login extends AppCompatActivity {
                 {
                     if(response.body().getToken() != null)
                     {
+                        saveData();
                         Users = response.body();
                         Intent intent = new Intent(Login.this, Main.class);
                         Bundle b = new Bundle();
@@ -104,6 +107,7 @@ public class Login extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putSerializable(userVariableKey, user);
+        saveData();
         super.onSaveInstanceState(outState);
     }
     // получение ранее сохраненного состояния
@@ -118,7 +122,7 @@ public class Login extends AppCompatActivity {
         etPassword.setText(user.getPassword());
     }
 
-    public  void saveData(View v)
+    public  void saveData()
     {
         // получаем введенные данные
         EditText etLogin=findViewById(R.id.Email);
@@ -129,7 +133,7 @@ public class Login extends AppCompatActivity {
         user=new User(login,password);
     }
 
-    public void getData(View v)
+    public void getData()
     {
         // получаем сохраненные данные
         EditText etLogin=findViewById(R.id.Email);
