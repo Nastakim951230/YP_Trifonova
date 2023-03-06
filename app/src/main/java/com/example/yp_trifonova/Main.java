@@ -4,6 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import static androidx.core.content.ContentProviderCompat.requireContext;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,6 +13,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -31,6 +33,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Main extends AppCompatActivity {
@@ -55,8 +58,11 @@ public class Main extends AppCompatActivity {
         new GetQuotes().execute();
 
 
-        ListView Nastroenie = findViewById(R.id.horizontalList);
-        FeelingsAdapter = new AdapterFeelings(Main.this, feelingsMaska);
+        RecyclerView Nastroenie = findViewById(R.id.horizontalList);
+        Nastroenie.setHasFixedSize(true);
+        Nastroenie.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
+
+        FeelingsAdapter = new AdapterFeelings(feelingsMaska,Main.this);
         Nastroenie.setAdapter(FeelingsAdapter);
 
 
@@ -68,74 +74,66 @@ public class Main extends AppCompatActivity {
 
 
         new GetQuotes().execute();
-        new GetFeelings().execute();
+        new GetFeeling().execute();
 
     }
-   /* private Bitmap getImageBitmap(String url) {
-        Bitmap bm = null;
-        try {
-            URL aURL = new URL(url);
-            URLConnection conn = aURL.openConnection();
-            conn.connect();
-            InputStream is = conn.getInputStream();
-            BufferedInputStream bis = new BufferedInputStream(is);
-            bm = BitmapFactory.decodeStream(bis);
-            bis.close();
-            is.close();
-        } catch (IOException e) {
-            Log.e(TAG, "Error getting bitmap", e);
+
+    private class GetFeeling extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            try {
+                URL url = new URL("http://mskko2021.mad.hakta.pro/api/feelings");
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder result = new StringBuilder();
+                String line = "";
+
+                while ((line = reader.readLine()) != null)
+                {
+                    result.append(line);
+                }
+                return result.toString();
+            }
+            catch (Exception exception)
+            {
+                return null;
+            }
         }
-        return bm;
-    }*/
-    private class GetFeelings extends AsyncTask<Void,Void,String>
-   {
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            try
+            {
+                feelingsMaska.clear();
+                FeelingsAdapter.notifyDataSetChanged();
 
-       @Override
-       protected String doInBackground(Void... voids) {
-           try{
-               URL url = new URL("http://mskko2021.mad.hakta.pro/api/feelings");
-               HttpURLConnection connection=(HttpURLConnection) url.openConnection();
+                JSONObject object = new JSONObject(s);
+                JSONArray tempArray  = object.getJSONArray("data");
 
-               BufferedReader reader=new BufferedReader(new InputStreamReader(connection.getInputStream()));
-               StringBuilder result=new StringBuilder();
-               String line= "";
-               while ((line = reader.readLine()) != null)
-               {
-                   result.append(line);
-               }
-               return result.toString();
-           }
-           catch (Exception exception)
-           {
-               return null;
-           }
-
-       }
-       @Override
-       protected void onPostExecute(String s) {
-           super.onPostExecute(s);
-           try {
-               JSONObject object=new JSONObject(s);
-               JSONArray tempArray= object.getJSONArray("data") ;
-               for (int i = 0;i<tempArray.length();i++)
-               {
-                   JSONObject productJson = tempArray.getJSONObject(i);
-                   MaskaFeelings tempNastorenie = new MaskaFeelings(
-                           productJson.getInt("id"),
-                           productJson.getString("title"),
-                           productJson.getInt("position"),
-                           productJson.getString("image")
-                   );
-                   feelingsMaska.add(tempNastorenie);
-                   FeelingsAdapter.notifyDataSetInvalidated();
-               }
-           }
-           catch (Exception exception)
-           {
-               Toast.makeText(Main.this, "При выводе данных возникла ошибка", Toast.LENGTH_SHORT).show();
-           }
-       }
-   }
+                for (int i = 0;i<tempArray.length();i++)
+                {
+                    JSONObject productJson = tempArray.getJSONObject(i);
+                    MaskaFeelings tempProduct = new MaskaFeelings(
+                            productJson.getInt("id"),
+                            productJson.getString("title"),
+                            productJson.getString("image"),
+                            productJson.getInt("position")
+                    );
+                    feelingsMaska.add(tempProduct);
+                    FeelingsAdapter.notifyDataSetChanged();
+                }
+                feelingsMaska.sort(Comparator.comparing(MaskaFeelings::getPosition));
+                FeelingsAdapter.notifyDataSetChanged();
+            }
+            catch (Exception exception)
+            {
+                Toast.makeText(Main.this, "При выводе данных возникла ошибка", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
 
 

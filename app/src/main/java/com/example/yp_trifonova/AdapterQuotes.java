@@ -31,7 +31,30 @@ public class AdapterQuotes extends BaseAdapter {
         this.nContext = nContext;
         this.maskList = maskList;
     }
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
 
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Ошибка", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+        }
+    }
     @Override
     public int getCount() {
         return maskList.size();
@@ -69,8 +92,8 @@ public class AdapterQuotes extends BaseAdapter {
         }
         else
         {
+            new DownloadImageTask((ImageView) Image).execute(maskQuote.getImage());
 
-              Image.setImageURI(Uri.parse(maskQuote.getImage()));
         }
         description.setText(maskQuote.getDescription());
         return v;

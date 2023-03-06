@@ -1,62 +1,90 @@
 package com.example.yp_trifonova;
 
 import android.content.Context;
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.io.InputStream;
 import java.util.List;
 
-public class AdapterFeelings extends BaseAdapter {
+public class AdapterFeelings extends RecyclerView.Adapter<AdapterFeelings.ViewHolder> {
 
-    private Context nContext;
-    List<MaskaFeelings> maskList;
+    private List<MaskaFeelings> dataModalArrayList;
+    private Context context;
 
-    public AdapterFeelings(Context nContext, List<MaskaFeelings> maskList) {
-        this.nContext = nContext;
-        this.maskList = maskList;
+    public AdapterFeelings(List<MaskaFeelings> dataModalArrayList, Context context) {
+        this.dataModalArrayList = dataModalArrayList;
+        this.context = context;
+    }
+
+    @NonNull
+    @Override
+    public AdapterFeelings.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new AdapterFeelings.ViewHolder(LayoutInflater.from(context).inflate(R.layout.maska_nastroenie, parent, false));
     }
 
     @Override
-    public int getCount() {
-        return maskList.size();
-    }
+    public void onBindViewHolder(@NonNull AdapterFeelings.ViewHolder holder, int position) {
+        final MaskaFeelings modal = dataModalArrayList.get(position);
+        holder.title.setText(modal.getTitle());
 
-    @Override
-    public Object getItem(int i) {
-        return maskList.get(i);
-    }
-
-    @Override
-    public long getItemId(int i)
-    {
-        return maskList.get(i).getId();
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-
-        View v = View.inflate(nContext,R.layout.maska_nastroenie,null);
-        TextView title = v.findViewById(R.id.TextNastroenie);
-        ImageView Image = v.findViewById(R.id.foto);
-
-        MaskaFeelings maskaFeelings = maskList.get(position);
-        title.setText(maskaFeelings.getTitle());
-
-
-        Image.setImageURI(Uri.parse(maskaFeelings.getImage()));
-        if(maskaFeelings.getImage().toString().equals("null"))
+        if(modal.getImage().equals("null"))
         {
-            Image.setImageResource(R.drawable.picture);
+            holder.image.setImageResource(R.drawable.picture);
         }
         else
         {
-
-            Image.setImageURI(Uri.parse(maskaFeelings.getImage()));
+            new AdapterFeelings.DownloadImageTask((ImageView) holder.image)
+                    .execute(modal.getImage());
         }
-        return v;
+    }
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Ошибка", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+        }
+    }
+    @Override
+    public int getItemCount() {
+        return dataModalArrayList.size();
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        private TextView title;
+        private ImageView image;
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            title = itemView.findViewById(R.id.TextNastroenie);
+            image = itemView.findViewById(R.id.foto);
+        }
     }
 }
