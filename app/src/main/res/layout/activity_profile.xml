@@ -25,9 +25,9 @@
                 android:id="@+id/imageView"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:layout_marginTop="10dp"
                 android:scaleType="fitXY"
                 android:src="@drawable/logo"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"></ImageView>
@@ -38,10 +38,10 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="40dp"
                 android:onClick="Menu"
                 android:scaleType="fitXY"
                 android:src="@drawable/hamburger"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"></ImageView>
 
@@ -61,11 +61,12 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/profilImage"
-            android:layout_width="250dp"
-            android:layout_height="250dp"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
             android:onClick="profile"
             android:scaleType="fitXY"
             android:src="@drawable/koala"
+            app:layout_constraintBottom_toTopOf="@+id/Name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/header"
@@ -102,6 +103,7 @@
             android:text="Эмиль"
             android:textColor="@color/white"
             android:textSize="30dp"
+            app:layout_constraintBottom_toTopOf="@+id/foto"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profilImage"></TextView>
@@ -112,6 +114,8 @@
             android:layout_height="0dp"
             android:layout_marginBottom="10dp"
             app:layout_constraintBottom_toTopOf="@+id/Nav"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/Name"></ListView>
 
         <ImageView

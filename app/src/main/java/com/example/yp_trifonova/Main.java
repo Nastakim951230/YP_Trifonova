@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -38,6 +39,8 @@ import java.util.List;
 
 public class Main extends AppCompatActivity {
 
+    private TextView textHello;
+    private ImageView icon;
 
     private AdapterQuotes QouterAdapter;
     private List<QueteMaska> Quotelist = new ArrayList<>();
@@ -66,18 +69,40 @@ public class Main extends AppCompatActivity {
         Nastroenie.setAdapter(FeelingsAdapter);
 
 
-    /*    LinearLayoutManager layoutManager
-                = new LinearLayoutManager(, LinearLayoutManager.HORIZONTAL, false);
-
-        RecyclerView myList = (RecyclerView) findViewById(R.id.horizontalList);
-        myList.setLayoutManager(layoutManager);*/
+        textHello = findViewById(R.id.privetstvie);
+        textHello.setText("С возвращением, "+ Login.Users.getNickName() + "!");
+        icon=findViewById(R.id.profilImage);
+        new DownloadImageTask((ImageView) icon).execute(Login.Users.getAvatar());
 
 
         new GetQuotes().execute();
         new GetFeeling().execute();
 
     }
+    public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
 
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Ошибка", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+        }
+    }
     private class GetFeeling extends AsyncTask<Void, Void, String> {
 
         @Override
