@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -27,14 +28,17 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class Login extends AppCompatActivity {
 
     User user = new User( "","");
-    final static String userVariableKey = "USER_VARIABLE";
-
+    final static String EmailUser = "Email";
+    final static String PasswordUser = "Password";
+    SharedPreferences sPref;
     public static MaskaUser Users;
     EditText email, password;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+
         email = findViewById(R.id.Email);
         password = findViewById(R.id.Password);
         getData();
@@ -103,43 +107,27 @@ public class Login extends AppCompatActivity {
         });
 
     }
-    // сохранение состояния
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putSerializable(userVariableKey, user);
-        saveData();
-        super.onSaveInstanceState(outState);
-    }
-    // получение ранее сохраненного состояния
-    @Override
-    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        // получаем объект User в переменную
-        user=(User)savedInstanceState.getSerializable(userVariableKey);
-        EditText etLogin=findViewById(R.id.Email);
-        EditText etPassword=findViewById(R.id.Password);
-        etLogin.setText(user.getLogin());
-        etPassword.setText(user.getPassword());
-    }
 
     public  void saveData()
     {
         // получаем введенные данные
-        EditText etLogin=findViewById(R.id.Email);
-        EditText etPassword=findViewById(R.id.Password);
 
-        String login=etLogin.getText().toString();
-        String password=etPassword.getText().toString();
-        user=new User(login,password);
+        sPref=getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor ed=sPref.edit();
+        ed.putString(EmailUser,email.getText().toString());
+        ed.putString(PasswordUser,password.getText().toString());
+       ed.commit();
+
     }
 
     public void getData()
     {
         // получаем сохраненные данные
-        EditText etLogin=findViewById(R.id.Email);
-        EditText etPassword=findViewById(R.id.Password);
-        etLogin.setText(user.getLogin());
-        etPassword.setText(user.getPassword());
+        sPref=getPreferences(MODE_PRIVATE);
+        String emailUser=sPref.getString(EmailUser,"");
+        String passwordUser=sPref.getString(PasswordUser,"");
+        email.setText(emailUser);
+        password.setText(passwordUser);
 
     }
 
