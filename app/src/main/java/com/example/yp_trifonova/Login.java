@@ -27,7 +27,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Login extends AppCompatActivity {
 
-    User user = new User( "","");
+
     final static String EmailUser = "Email";
     final static String PasswordUser = "Password";
     SharedPreferences sPref;
