@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -40,6 +41,8 @@ public class Profile extends AppCompatActivity {
     OutputStream outputStream;
     private AdapterImage pAdapter;
     private List<MaskaImage> listImage = new ArrayList<>();
+
+    public static MaskaImage maskProfileImage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +58,13 @@ public class Profile extends AppCompatActivity {
         GridView gvImage = findViewById(R.id.fotolist);
         pAdapter = new AdapterImage(Profile.this, listImage);
         gvImage.setAdapter(pAdapter);
-
+        gvImage.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                maskProfileImage = listImage.get(i);
+                startActivity(new Intent(Profile.this, Photo.class));
+            }
+        });
         GetImageProfile();
 
     }
