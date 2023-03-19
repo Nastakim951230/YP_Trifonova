@@ -103,31 +103,37 @@
             android:text="Эмиль"
             android:textColor="@color/white"
             android:textSize="30dp"
-            app:layout_constraintBottom_toTopOf="@+id/fotolist"
+            app:layout_constraintBottom_toTopOf="@+id/Butt"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profilImage"></TextView>
 
         <Button
             android:id="@+id/Butt"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:backgroundTint="#997C9A92"
             android:onClick="addImage"
             android:text="Добавить"
-            app:layout_constraintBottom_toBottomOf="@+id/profilImage"
-            app:layout_constraintStart_toStartOf="parent"></Button>
+            app:cornerRadius="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/Name"></Button>
 
         <GridView
             android:id="@+id/fotolist"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="10dp"
+            android:numColumns="2"
             app:layout_constraintBottom_toTopOf="@+id/Nav"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/Name"
-            android:numColumns="2"
-            ></GridView>
+            app:layout_constraintTop_toBottomOf="@+id/Butt">
+
+        </GridView>
 
         <ImageView
             android:id="@+id/Profile"

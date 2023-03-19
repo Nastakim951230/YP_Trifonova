@@ -55,6 +55,7 @@ public class Profile extends AppCompatActivity {
         GridView gvImage = findViewById(R.id.fotolist);
         pAdapter = new AdapterImage(Profile.this, listImage);
         gvImage.setAdapter(pAdapter);
+
         GetImageProfile();
 
     }
@@ -85,24 +86,27 @@ public class Profile extends AppCompatActivity {
     }
     private void GetImageProfile()
     {
-
+        listImage.clear();
+        pAdapter.notifyDataSetInvalidated();
         String path = getApplicationInfo().dataDir + "/MyFiles";
         File directory = new File(path);
         File[] files = directory.listFiles();
         int j = 0;
-        for (int i = 0; i < files.length; i++)
-        {
-            Long last = files[i].lastModified();
-            MaskaImage tempProduct = new MaskaImage(
-                    j,
-                    files[i].getAbsolutePath(),
-                    files[i],
-                    getTime(last)
-            );
-            listImage.add(tempProduct);
-            pAdapter.notifyDataSetInvalidated();
-        }
+        if(files!=null) {
 
+
+            for (int i = 0; i < files.length; i++) {
+                Long last = files[i].lastModified();
+                MaskaImage tempProduct = new MaskaImage(
+                        j,
+                        files[i].getAbsolutePath(),
+                        files[i],
+                        getTime(last)
+                );
+                listImage.add(tempProduct);
+                pAdapter.notifyDataSetInvalidated();
+            }
+        }
 
     }
 
@@ -139,14 +143,14 @@ public class Profile extends AppCompatActivity {
                             outputStream.flush();
                             outputStream.close();
                             Toast.makeText(Profile.this, "Изображение успешно сохранено", Toast.LENGTH_LONG).show();
+
                         }
                         catch (Exception e)
                         {
                             e.printStackTrace();
                             Toast.makeText(Profile.this, "При сохранение изображения возникла ошибка!", Toast.LENGTH_LONG).show();
                         }
-                        GetImageProfile();
-                    }
+                        GetImageProfile();                    }
                 }
             });
 
